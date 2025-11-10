@@ -16,7 +16,8 @@ RUN apt-get update && \
         python3 \
         python3-pip \
         ca-certificates \
-        gnupg && \
+        gnupg \
+        xz-utils && \
     pip3 install git+https://github.com/gyteng/shadowsocks.git@master && \
     curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - && \
     apt-get install -y nodejs shadowsocks-libev && \

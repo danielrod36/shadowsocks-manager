@@ -12,13 +12,14 @@
 - [x] Update Docker configuration to use modern base images
 - [x] Create SECURITY.md with vulnerability reporting guidelines
 - [x] Generate comprehensive upgrade guide for maintainers
+- [x] Fix Docker Ubuntu Dockerfile (added xz-utils package)
 
 ## 🔴 High Priority - Code Migration Required
 
 ### 1. Migrate `request` and `request-promise` to `axios`
 
-**Status**: Not started  
-**Priority**: HIGH  
+**Status**: Not started
+**Priority**: HIGH
 **Estimated Time**: 2-3 hours
 
 **Files that need migration**:
@@ -40,8 +41,8 @@
 
 ### 2. Update Database Configuration for mysql2
 
-**Status**: Not started  
-**Priority**: MEDIUM  
+**Status**: Not started
+**Priority**: MEDIUM
 **Estimated Time**: 30 minutes
 
 **Files to check**:
@@ -61,8 +62,8 @@
 
 ### 3. Add Automated Tests
 
-**Status**: Not started  
-**Priority**: MEDIUM  
+**Status**: Not started
+**Priority**: MEDIUM
 **Estimated Time**: 4-8 hours
 
 **Tasks**:
@@ -76,8 +77,8 @@
 
 ### 4. Test All Functionality After Updates
 
-**Status**: Not started  
-**Priority**: HIGH  
+**Status**: Not started
+**Priority**: HIGH
 **Estimated Time**: 2-3 hours
 
 **Test Checklist**:
@@ -96,8 +97,8 @@
 
 ### 5. Performance Testing
 
-**Status**: Not started  
-**Priority**: MEDIUM  
+**Status**: Not started
+**Priority**: MEDIUM
 **Estimated Time**: 2 hours
 
 **Tasks**:
@@ -111,8 +112,8 @@
 
 ### 6. Update ESLint Configuration
 
-**Status**: Not started  
-**Priority**: LOW  
+**Status**: Not started
+**Priority**: LOW
 **Estimated Time**: 1 hour
 
 **Tasks**:
@@ -126,8 +127,8 @@
 
 ### 7. Add Two-Factor Authentication (2FA)
 
-**Status**: Not started  
-**Priority**: LOW  
+**Status**: Not started
+**Priority**: LOW
 **Estimated Time**: 4-6 hours
 
 **Tasks**:
@@ -142,8 +143,8 @@
 
 ### 8. Improve Logging and Monitoring
 
-**Status**: Not started  
-**Priority**: LOW  
+**Status**: Not started
+**Priority**: LOW
 **Estimated Time**: 2-3 hours
 
 **Tasks**:
@@ -155,8 +156,8 @@
 
 ### 9. Add API Documentation
 
-**Status**: Not started  
-**Priority**: LOW  
+**Status**: Not started
+**Priority**: LOW
 **Estimated Time**: 3-4 hours
 
 **Tasks**:
@@ -168,8 +169,8 @@
 
 ### 10. Optimize Docker Images
 
-**Status**: Partially complete  
-**Priority**: LOW  
+**Status**: Partially complete
+**Priority**: LOW
 **Estimated Time**: 1-2 hours
 
 **Completed**:
@@ -187,8 +188,8 @@
 
 ### 11. TypeScript Migration
 
-**Status**: Not started  
-**Priority**: FUTURE  
+**Status**: Not started
+**Priority**: FUTURE
 **Estimated Time**: 20-40 hours
 
 **Why**: TypeScript would provide better type safety and developer experience.
@@ -202,8 +203,8 @@
 
 ### 12. Database Migration System
 
-**Status**: Not started  
-**Priority**: FUTURE  
+**Status**: Not started
+**Priority**: FUTURE
 **Estimated Time**: 4-6 hours
 
 **Tasks**:
@@ -214,8 +215,8 @@
 
 ### 13. API Versioning
 
-**Status**: Not started  
-**Priority**: FUTURE  
+**Status**: Not started
+**Priority**: FUTURE
 **Estimated Time**: 3-4 hours
 
 **Why**: Would allow breaking changes without affecting existing clients.
@@ -230,7 +231,7 @@
 
 ### Issue 1: request Package Still in Dependencies
 
-**Impact**: HIGH  
+**Impact**: HIGH
 **Status**: Needs migration
 
 The `request` and `request-promise` packages were removed from package.json, but code still uses them in 4 plugin files. This will cause runtime errors.
@@ -239,7 +240,7 @@ The `request` and `request-promise` packages were removed from package.json, but
 
 ### Issue 2: Potential Breaking Changes
 
-**Impact**: MEDIUM  
+**Impact**: MEDIUM
 **Status**: Needs testing
 
 Several major version updates may have breaking changes:
@@ -252,7 +253,7 @@ Several major version updates may have breaking changes:
 
 ### Issue 3: No Automated Testing
 
-**Impact**: MEDIUM  
+**Impact**: MEDIUM
 **Status**: Needs implementation
 
 Without tests, it's difficult to verify that updates haven't broken functionality.
