@@ -22,10 +22,48 @@ const sessionParser = session({
 const bodyParser = require('body-parser');
 const compression = require('compression');
 const expressValidator = require('express-validator');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const app = express();
 const cors = require('cors');
 
 app.set('trust proxy', 'loopback');
+
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5, // stricter for auth endpoints
+  message: 'Too many login attempts, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true,
+});
+
 app.use(log4js.connectLogger(expressLogger, {
   level: 'auto',
   format: '[:req[host]] [:req[x-real-ip]] :method :status :response-timems :url',
@@ -42,11 +80,20 @@ if(config.plugins.webgui.cors) {
   app.use(cors(corsOptions));
 }
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 app.use(expressValidator());
 app.use(compression());
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(sessionParser);
+
+app.use('/api/home/login', authLimiter);
+app.use('/api/home/googleLogin', authLimiter);
+app.use('/api/home/facebookLogin', authLimiter);
+app.use('/api/home/githubLogin', authLimiter);
+app.use('/api/home/twitterLogin', authLimiter);
+app.use('/api/home/macLogin', authLimiter);
+app.use('/api/home/signup', authLimiter);
+app.use('/api/', apiLimiter);
 
 app.engine('.html', require('ejs').__express);
 app.engine('.js', require('ejs').__express);

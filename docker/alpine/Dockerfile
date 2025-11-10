@@ -1,6 +1,8 @@
-FROM node:12-alpine
+FROM node:20-alpine
 LABEL maintainer="Gyteng <igyteng@gmail.com>"
+
 COPY ./shadowsocks-libev /tmp/repo
+
 RUN set -ex \
   && apk add --no-cache --virtual .build-deps \
       autoconf \
@@ -20,12 +22,19 @@ RUN set -ex \
   && apk del .build-deps \
   && apk add --no-cache \
       rng-tools \
+      curl \
       $(scanelf --needed --nobanner /usr/bin/ss-* \
       | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
       | sort -u) \
   && rm -rf /tmp/repo
+
 RUN apk --no-cache add tzdata iproute2 && \
     ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
     echo "Asia/Shanghai" > /etc/timezone && \
-    npm i -g shadowsocks-manager --unsafe-perm
+    npm i -g shadowsocks-manager --unsafe-perm && \
+    npm cache clean --force
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8080/api/home/login || exit 1
+
 CMD ["ssmgr"]

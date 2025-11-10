@@ -12,8 +12,19 @@ try {
   host = config.manager.address.split(':')[0];
   port = +config.manager.address.split(':')[1];
   password = config.manager.password;
-} catch(err) {
 
+  if (!host || !port || !password) {
+    throw new Error('Manager configuration is incomplete');
+  }
+
+  if (isNaN(port) || port < 1 || port > 65535) {
+    throw new Error(`Invalid port number: ${port}`);
+  }
+
+  logger.info(`Manager configured: ${host}:${port}`);
+} catch(err) {
+  logger.error('Failed to parse manager configuration:', err.message);
+  logger.warn('Manager service may not function correctly without proper configuration');
 }
 
 const pack = (data, password) => {

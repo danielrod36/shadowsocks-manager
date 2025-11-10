@@ -28,10 +28,18 @@ try {
   if(configFilePath.substr(configFilePath.length - 5) === '.json') {
     config = JSON.parse(configFileData);
   } else {
-    config = yaml.safeLoad(configFileData, 'utf8');
+    config = yaml.load(configFileData, 'utf8');
   }
 } catch (err) {
-  logger.error(err);
+  logger.error('Failed to load configuration file:', err.message);
+  logger.error('Stack trace:', err.stack);
+  logger.error('Please check your configuration file syntax and permissions');
+  process.exit(1);
+}
+
+if (!config) {
+  logger.error('Configuration is empty or invalid');
+  process.exit(1);
 }
 
 exports.all = () => {
@@ -40,11 +48,16 @@ exports.all = () => {
 
 exports.get = (path) => {
   if(!config) {
+    logger.warn('Attempting to get config value but config is not loaded');
     return;
   }
   return _.get(config, path);
 };
 
 exports.set = (path, value) => {
+  if(!config) {
+    logger.warn('Attempting to set config value but config is not loaded');
+    return;
+  }
   return _.set(config, path, value);
 };

@@ -16,36 +16,71 @@ For more details, you can see [docs](https://shadowsocks.github.io/shadowsocks-m
 If you want to use the old version, please switch to [this branch](https://github.com/shadowsocks/shadowsocks-manager/tree/version1).
 
 
+## ⚠️ Security Notice
+
+**Important**: This project has been updated with critical security fixes. Please read [SECURITY_UPGRADE_GUIDE.md](SECURITY_UPGRADE_GUIDE.md) before upgrading.
+
+### Recent Security Updates
+- Fixed critical vulnerabilities in axios, ejs, js-yaml, and ws
+- Updated Node.js requirement to 18.0.0+ (Node.js 12 is EOL)
+- Added security middleware (Helmet.js, rate limiting)
+- Removed deprecated packages (request, request-promise)
+
+See [CHANGES_SUMMARY.md](CHANGES_SUMMARY.md) for complete details.
+
 ## Dependencies
 
-* Node.js 12.*
-* Redis
+* **Node.js 18.0.0 or higher** (20.x LTS recommended)
+* Redis (optional, for session storage)
+
+**Note**: Node.js 12 is no longer supported due to end-of-life. Please upgrade to Node.js 18 or 20.
 
 ## Install
 
+### Prerequisites
+
+Ensure you have Node.js 18+ installed:
+```bash
+node --version  # Should show v18.x.x or v20.x.x
+```
+
+If you need to upgrade Node.js, we recommend using [nvm](https://github.com/nvm-sh/nvm):
+```bash
+# Install nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+# Install Node.js 20 LTS
+nvm install 20
+nvm use 20
+nvm alias default 20
+```
+
 ### From source:
 
-```
+```bash
 git clone https://github.com/shadowsocks/shadowsocks-manager.git
 cd shadowsocks-manager
-npm i
+npm install
+npm run build
 ```
-use `node server.js` to run this program.  
+use `node server.js` to run this program.
 
 ### From npm:
-```
+```bash
 npm i -g shadowsocks-manager
 ```
-You may need to use the `--unsafe-perm` flag if you receive an permission error
-```
+You may need to use the `--unsafe-perm` flag if you receive a permission error:
+```bash
 npm i -g shadowsocks-manager --unsafe-perm
 ```
 use `ssmgr` to run this program.
 
 ### From docker:
-```
+```bash
 docker run --name ssmgr -idt -v ~/.ssmgr:/root/.ssmgr --net=host gyteng/ssmgr [ssmgr params...]
 ```
+
+**Note**: Docker images have been updated to use Node.js 20 and Ubuntu 22.04 LTS.
 
 ### Build docker image:
 
