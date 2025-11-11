@@ -4,6 +4,8 @@
 
 This document summarizes all security fixes and improvements made to shadowsocks-manager.
 
+> 📚 **New to these docs?** See [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) for a complete guide to all documentation.
+
 ---
 
 ## ✅ Completed Security Fixes
@@ -466,7 +468,7 @@ curl -I http://localhost:8080
 - ✅ Updated 15+ dependencies
 - ✅ Added security middleware (helmet, rate limiting)
 - ✅ Fixed error handling issues
-- ✅ Updated Docker configurations
+- ✅ Updated Docker configurations (added xz-utils)
 - ✅ Created comprehensive documentation
 
 ### Security Posture
@@ -483,8 +485,65 @@ curl -I http://localhost:8080
 
 ---
 
-**Status**: ✅ All critical security issues resolved  
-**Last Updated**: 2024  
-**Version**: 1.0.0+  
-**Node.js Requirement**: ≥18.0.0  
+## ⚠️ Important Notes
+
+### For Repository Maintainers
+
+**These changes are currently only in the local repository.** To make them available to users:
+
+1. **Publish to npm**: The updated `package.json` needs to be published to npm
+   ```bash
+   npm version patch  # or minor/major
+   npm publish
+   ```
+
+2. **Update Docker images**: Rebuild and push Docker images to Docker Hub
+   ```bash
+   docker build -t gyteng/ssmgr:latest -f docker/ubuntu/Dockerfile .
+   docker push gyteng/ssmgr:latest
+   ```
+
+3. **Tag the release**: Create a GitHub release with the security fixes
+   ```bash
+   git tag -a v1.0.0 -m "Security update: Fix critical CVEs"
+   git push origin v1.0.0
+   ```
+
+### For Users Installing from npm
+
+**Current npm package still has old dependencies.** When you run:
+```bash
+npm i -g shadowsocks-manager
+```
+
+You will see deprecation warnings because the npm registry still has the old package.json. This is expected until the maintainer publishes the updated version.
+
+**Workaround**: Install from source instead:
+```bash
+git clone https://github.com/shadowsocks/shadowsocks-manager.git
+cd shadowsocks-manager
+npm install
+npm run build
+node server.js
+```
+
+### Docker Build Warnings
+
+When building Docker images, you may see these warnings (they are harmless):
+- `ln: failed to create symbolic link '/etc/resolv.conf': Device or resource busy` - Normal in Docker
+- `update-alternatives: warning: skip creation of...` - Missing man pages (not needed)
+- `Failed to open connection to "system" message bus` - Normal in Docker (no dbus)
+- `WARNING: Running pip as the 'root' user` - Acceptable in Docker containers
+- `npm warn deprecated...` - Expected until npm package is updated
+
+These warnings do not affect functionality.
+
+---
+
+**Status**: ✅ All critical security issues resolved
+**Last Updated**: 2024
+**Version**: 1.0.0+
+**Node.js Requirement**: ≥18.0.0
 **Recommended Node.js**: 20.x LTS
+
+**⚠️ Action Required**: Maintainer needs to publish updated package to npm

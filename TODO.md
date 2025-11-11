@@ -13,6 +13,28 @@
 - [x] Create SECURITY.md with vulnerability reporting guidelines
 - [x] Generate comprehensive upgrade guide for maintainers
 - [x] Fix Docker Ubuntu Dockerfile (added xz-utils package)
+- [x] Create maintainer publishing guide
+
+## 🔴 CRITICAL - Publishing Required
+
+### 0. Publish Security Fixes to npm and Docker Hub
+
+**Status**: ⏳ AWAITING MAINTAINER ACTION
+**Priority**: 🔴 CRITICAL
+**Estimated Time**: 30-60 minutes
+
+**⚠️ IMPORTANT**: Security fixes are currently only in the repository. Users installing from npm or Docker Hub will still get the vulnerable version.
+
+**Reference**: See **[MAINTAINER_PUBLISHING_GUIDE.md](MAINTAINER_PUBLISHING_GUIDE.md)** for complete step-by-step instructions.
+
+**Quick Steps**:
+1. [ ] Run tests and verify everything works
+2. [ ] Publish to npm: `npm version major && npm publish`
+3. [ ] Build and push Docker images
+4. [ ] Create GitHub release with security advisory
+5. [ ] Announce the release
+
+**Why Critical**: Until published, all users are still vulnerable to 4 critical CVEs.
 
 ## 🔴 High Priority - Code Migration Required
 

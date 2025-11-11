@@ -1,5 +1,25 @@
 # 🚨 IMMEDIATE ACTION REQUIRED - Security Update
 
+> 📚 **Looking for other docs?** See [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) for complete documentation guide.
+
+## ⚠️ CRITICAL WARNING: NPM Package Not Updated
+
+**🚨 The npm package has NOT been updated yet and still contains vulnerabilities!**
+
+### ❌ Don't Use (Contains Vulnerabilities):
+```bash
+npm i -g shadowsocks-manager  # Still has 4 critical CVEs!
+```
+
+### ✅ Use This Instead (Secure Version):
+```bash
+git clone https://github.com/shadowsocks/shadowsocks-manager.git
+cd shadowsocks-manager
+npm install
+npm run build
+node server.js
+```
+
 ## Critical Security Vulnerabilities Fixed
 
 This repository has been updated to fix **4 CRITICAL** security vulnerabilities that could allow:
