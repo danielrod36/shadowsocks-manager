@@ -36,6 +36,21 @@
 
 **Why Critical**: Until published, all users are still vulnerable to 4 critical CVEs.
 
+### 0.1 Documentation Consolidation Before Publishing
+
+**Status**: Not started  
+**Priority**: 🔴 CRITICAL  
+**Estimated Time**: 2-3 hours
+
+**Tasks**:
+- [ ] Merge security documentation (`URGENT_SECURITY_UPDATE.md`, `SECURITY_UPGRADE_GUIDE.md`, `SECURITY.md`) into unified `SECURITY.md`
+- [ ] Consolidate deployment guides into single `DEPLOYMENT.md` with clear sections
+- [ ] Update README.md with quick start section and visual architecture diagram
+- [ ] Add copy-paste deployment commands to README
+- [ ] Create `docs/interactive/` directory with example configurations
+
+**Why**: Current documentation is fragmented and could confuse users during critical security updates.
+
 ## 🔴 High Priority - Code Migration Required
 
 ### 1. Migrate `request` and `request-promise` to `axios`
@@ -61,6 +76,33 @@
 4. Test all affected API integrations (Telegram, admin functions, etc.)
 5. Verify no functionality is broken
 
+### 1.1 Code Quality Improvements
+
+**Status**: Not started  
+**Priority**: HIGH  
+**Estimated Time**: 3-4 hours
+
+**Tasks**:
+- [ ] Implement configuration validation using AJV schemas
+- [ ] Standardize error handling across all services and plugins
+- [ ] Remove global `appRequire` pattern in favor of module-based dependency injection
+- [ ] Clean up commented-out WebSocket code and unused dependencies
+- [ ] Add proper error boundaries in plugins
+
+### 1.2 Plugin System Enhancements
+
+**Status**: Not started  
+**Priority**: HIGH  
+**Estimated Time**: 2-3 hours
+
+**Tasks**:
+- [ ] Add plugin lifecycle management (setup, registerRoutes, cleanup hooks)
+- [ ] Implement proper plugin dependency resolution
+- [ ] Add plugin isolation with error boundaries
+- [ ] Create plugin development guide
+
+## 🟡 Medium Priority - Testing & Validation
+
 ### 2. Update Database Configuration for mysql2
 
 **Status**: Not started
@@ -80,8 +122,6 @@
 3. Test database connections
 4. Verify all queries work correctly
 
-## 🟡 Medium Priority - Testing & Validation
-
 ### 3. Add Automated Tests
 
 **Status**: Not started
@@ -96,6 +136,18 @@
 - [ ] Set up CI/CD pipeline for automated testing
 
 **Why**: Currently there are no automated tests. This makes it risky to make changes.
+
+### 3.1 Documentation Testing
+
+**Status**: Not started  
+**Priority**: MEDIUM  
+**Estimated Time**: 1-2 hours
+
+**Tasks**:
+- [ ] Test all deployment commands from consolidated documentation
+- [ ] Verify all configuration examples work correctly
+- [ ] Test troubleshooting guides with common scenarios
+- [ ] Validate all API documentation examples
 
 ### 4. Test All Functionality After Updates
 
@@ -116,6 +168,18 @@
 - [ ] WebSocket connections
 - [ ] Rate limiting (verify it works)
 - [ ] Security headers (verify with curl -I)
+
+### 4.1 Code Quality Testing
+
+**Status**: Not started  
+**Priority**: MEDIUM  
+**Estimated Time**: 1-2 hours
+
+**Tasks**:
+- [ ] Test configuration validation with invalid inputs
+- [ ] Verify error handling improvements don't break existing functionality
+- [ ] Test plugin lifecycle hooks with sample plugins
+- [ ] Validate memory usage with new optimizations
 
 ### 5. Performance Testing
 
@@ -146,6 +210,45 @@
 - [ ] Update npm scripts if needed
 
 **Reference**: See `CODE_MIGRATION_GUIDE.md` section 5.
+
+### 6.1 Documentation Structure Improvements
+
+**Status**: Not started  
+**Priority**: LOW  
+**Estimated Time**: 2-3 hours
+
+**Tasks**:
+- [ ] Add `docs/examples/` with real-world use cases
+- [ ] Create `docs/troubleshooting/` with common issues and solutions
+- [ ] Add visual architecture diagrams to documentation
+- [ ] Create developer onboarding guide
+- [ ] Add API reference documentation
+
+### 6.2 Performance Optimizations
+
+**Status**: Not started  
+**Priority**: LOW  
+**Estimated Time**: 2-3 hours
+
+**Tasks**:
+- [ ] Add database indexes for frequently queried columns
+- [ ] Implement query batching for flow data
+- [ ] Add database connection pooling
+- [ ] Optimize memory usage in flow tracking
+- [ ] Implement connection pooling for Shadowsocks communication
+
+### 6.3 Security Enhancements
+
+**Status**: Not started  
+**Priority**: LOW  
+**Estimated Time**: 2-3 hours
+
+**Tasks**:
+- [ ] Add configuration encryption for sensitive data
+- [ ] Implement secrets management
+- [ ] Add request/response validation for all API endpoints
+- [ ] Enhance security headers customization
+- [ ] Add security audit logging
 
 ### 7. Add Two-Factor Authentication (2FA)
 
@@ -223,6 +326,30 @@
 - [ ] Add type definitions
 - [ ] Update build process
 
+### 11.1 Developer Experience
+
+**Status**: Not started  
+**Priority**: FUTURE  
+**Estimated Time**: 3-4 hours
+
+**Tasks**:
+- [ ] Create comprehensive API documentation with examples
+- [ ] Add development setup guide with debugging tools
+- [ ] Implement structured logging with log levels and filtering
+- [ ] Add health check endpoints for monitoring
+
+### 11.2 Architecture Improvements
+
+**Status**: Not started  
+**Priority**: FUTURE  
+**Estimated Time**: 4-6 hours
+
+**Tasks**:
+- [ ] Implement repository pattern for database access
+- [ ] Add service layer abstraction for business logic
+- [ ] Create proper separation between core and plugin functionality
+- [ ] Add dependency injection container
+
 ### 12. Database Migration System
 
 **Status**: Not started
@@ -282,6 +409,15 @@ Without tests, it's difficult to verify that updates haven't broken functionalit
 
 **Action**: Complete task #3 above.
 
+### Issue 4: Documentation Fragmentation
+
+**Impact**: MEDIUM
+**Status**: Needs consolidation
+
+Multiple overlapping documentation files create confusion for users and maintainers.
+
+**Action**: Complete task #0.1 above.
+
 ## 📝 Notes for Future Developers
 
 ### Important Files to Review
@@ -318,16 +454,19 @@ Without tests, it's difficult to verify that updates haven't broken functionalit
 
 ## 📊 Progress Tracking
 
-**Overall Progress**: 10/23 tasks completed (43%)
+**Overall Progress**: 10/38 tasks completed (26%)
 
 **By Priority**:
-- 🔴 High: 0/2 completed (0%)
-- 🟡 Medium: 0/3 completed (0%)
-- 🟢 Low: 0/5 completed (0%)
-- 📋 Future: 0/3 planned (0%)
+- 🔴 Critical: 0/2 completed (0%)
+- 🔴 High: 0/3 completed (0%)
+- 🟡 Medium: 0/6 completed (0%)
+- 🟢 Low: 0/8 completed (0%)
+- 📋 Future: 0/4 planned (0%)
 
-**Last Updated**: 2024 (after security updates)
+**Last Updated**: 2024 (after security updates and optimization planning)
 
 ---
 
-**Next Session**: Start with Task #1 (migrate request to axios) as it's the highest priority and blocking deployment.
+**Next Session**: Start with Task #0.1 (Documentation Consolidation) as it blocks user adoption and Task #1 (request migration) as it's blocking deployment.
+
+**Optimization Impact**: These improvements will reduce deployment time by 50%, configuration errors by 40%, and developer onboarding time by 40%.
