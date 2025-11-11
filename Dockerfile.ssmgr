@@ -1,0 +1,38 @@
+FROM node:20-slim
+
+LABEL maintainer="Shadowsocks Manager"
+LABEL description="Shadowsocks Manager Web GUI"
+
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        curl \
+        ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create app directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production && \
+    npm cache clean --force
+
+# Copy application files
+COPY . .
+
+# Create data directory
+RUN mkdir -p /root/.ssmgr
+
+# Expose web GUI port
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+  CMD curl -f http://localhost:8080/api/home/login || exit 1
+
+# Start application
+CMD ["node", "server.js"]

@@ -1,10 +1,19 @@
-# 📚 Security Update Documentation Index
+# 📚 Documentation Index
 
-This directory contains comprehensive documentation for the security updates applied to shadowsocks-manager.
+This directory contains comprehensive documentation for shadowsocks-manager deployment, security updates, and development.
 
 ---
 
-## 🚨 Start Here
+## 🚀 New to Shadowsocks Manager?
+
+### Quick Deploy (Recommended):
+👉 **[QUICK_START.md](QUICK_START.md)** - Deploy in 3 steps (10 minutes)
+👉 **[DOKPLOY_DEPLOYMENT_GUIDE.md](DOKPLOY_DEPLOYMENT_GUIDE.md)** - Complete Dokploy guide
+👉 **[ARCHITECTURE.md](ARCHITECTURE.md)** - Understand the system
+
+---
+
+## 🚨 Security Updates
 
 ### For Users:
 👉 **[URGENT_SECURITY_UPDATE.md](URGENT_SECURITY_UPDATE.md)** - Quick 5-minute action guide
@@ -20,16 +29,44 @@ This directory contains comprehensive documentation for the security updates app
 
 ## 📖 Complete Documentation
 
+### Deployment Guides
+
+| Document | Audience | Purpose | Time to Read |
+|----------|----------|---------|--------------|
+| **[QUICK_START.md](QUICK_START.md)** | Everyone | 3-step deployment | 3 min |
+| **[DOKPLOY_DEPLOYMENT_GUIDE.md](DOKPLOY_DEPLOYMENT_GUIDE.md)** | DevOps | Complete Dokploy guide | 15 min |
+| **[VISUAL_GUIDE.md](VISUAL_GUIDE.md)** | Everyone | Step-by-step with diagrams | 10 min |
+| **[DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)** | Everyone | Printable checklist | 5 min |
+| **[DEPLOYMENT_COMPLETE.md](DEPLOYMENT_COMPLETE.md)** | Everyone | Implementation summary | 10 min |
+| **[ARCHITECTURE.md](ARCHITECTURE.md)** | Technical | System architecture | 10 min |
+
+### Security & Upgrade Guides
+
 | Document | Audience | Purpose | Time to Read |
 |----------|----------|---------|--------------|
 | **[URGENT_SECURITY_UPDATE.md](URGENT_SECURITY_UPDATE.md)** | Users | Quick upgrade guide | 5 min |
 | **[SECURITY_UPGRADE_GUIDE.md](SECURITY_UPGRADE_GUIDE.md)** | Users/Admins | Comprehensive upgrade instructions | 15 min |
+| **[SECURITY.md](SECURITY.md)** | Everyone | Security policy | 5 min |
+
+### Maintainer Guides
+
+| Document | Audience | Purpose | Time to Read |
+|----------|----------|---------|--------------|
 | **[MAINTAINER_CHECKLIST.md](MAINTAINER_CHECKLIST.md)** | Maintainers | Quick publishing checklist | 5 min |
 | **[MAINTAINER_PUBLISHING_GUIDE.md](MAINTAINER_PUBLISHING_GUIDE.md)** | Maintainers | Detailed publishing guide | 10 min |
+
+### Developer Guides
+
+| Document | Audience | Purpose | Time to Read |
+|----------|----------|---------|--------------|
 | **[CODE_MIGRATION_GUIDE.md](CODE_MIGRATION_GUIDE.md)** | Developers | Migrating deprecated code | 20 min |
-| **[CHANGES_SUMMARY.md](CHANGES_SUMMARY.md)** | Everyone | Complete list of changes | 10 min |
-| **[SECURITY.md](SECURITY.md)** | Everyone | Security policy | 5 min |
 | **[TODO.md](TODO.md)** | Developers | Remaining tasks | 5 min |
+
+### Reference
+
+| Document | Audience | Purpose | Time to Read |
+|----------|----------|---------|--------------|
+| **[CHANGES_SUMMARY.md](CHANGES_SUMMARY.md)** | Everyone | Complete list of changes | 10 min |
 | **[SESSION_SUMMARY.md](SESSION_SUMMARY.md)** | Everyone | Work completed summary | 10 min |
 
 ---
