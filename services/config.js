@@ -7,6 +7,9 @@ const _ = require('lodash');
 const log4js = require('log4js');
 const logger = log4js.getLogger('system');
 
+// Import configuration validation
+const { validateConfig, formatValidationErrors } = require('./config-schema');
+
 let config;
 
 const defaultPath = path.resolve(os.homedir() + '/.ssmgr/default.yml');
@@ -41,6 +44,18 @@ if (!config) {
   logger.error('Configuration is empty or invalid');
   process.exit(1);
 }
+
+// Validate configuration against schema
+const validationResult = validateConfig(config);
+if (!validationResult.valid) {
+  const errorMessages = formatValidationErrors(validationResult.errors);
+  logger.error('Configuration validation failed:');
+  errorMessages.forEach(msg => logger.error(`  - ${msg}`));
+  logger.error('Please fix the configuration errors and restart the application');
+  process.exit(1);
+}
+
+logger.info('Configuration validation passed');
 
 exports.all = () => {
   return config;

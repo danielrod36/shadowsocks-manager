@@ -2,35 +2,27 @@ const log4js = require('log4js');
 const logger = log4js.getLogger('alipay');
 const cron = appRequire('init/cron');
 const config = appRequire('services/config').all();
-const alipayf2f = require('alipay-ftof');
+const AlipaySdk = require('alipay-sdk').default;
 const fs = require('fs');
 const ref = appRequire('plugins/webgui_ref/time');
 const orderPlugin = appRequire('plugins/webgui_order');
 const groupPlugin = appRequire('plugins/group');
 
-let alipay_f2f;
+let alipay_sdk;
 if(config.plugins.alipay && config.plugins.alipay.use) {
   try {
     const privateKey = fs.readFileSync(config.plugins.alipay.merchantPrivateKey, 'utf8').toString();
-    config.plugins.alipay.merchantPrivateKey = privateKey
-    .replace(/-----BEGIN RSA PRIVATE KEY-----/, '')
-    .replace(/-----END RSA PRIVATE KEY-----/, '')
-    .replace(/\n/g, '');
-  } catch (err) {}
-  try {
     const publicKey = fs.readFileSync(config.plugins.alipay.alipayPublicKey, 'utf8').toString();
-    config.plugins.alipay.alipayPublicKey = publicKey
-    .replace(/-----BEGIN PUBLIC KEY-----/, '')
-    .replace(/-----END PUBLIC KEY-----/, '')
-    .replace(/\n/g, '');
-  } catch (err) {}
-  alipay_f2f = new alipayf2f({
-    appid: config.plugins.alipay.appid,
-    notifyUrl: config.plugins.alipay.notifyUrl,
-    merchantPrivateKey: '-----BEGIN RSA PRIVATE KEY-----\n' + config.plugins.alipay.merchantPrivateKey + '\n-----END RSA PRIVATE KEY-----',
-    alipayPublicKey: '-----BEGIN PUBLIC KEY-----\n' + config.plugins.alipay.alipayPublicKey + '\n-----END PUBLIC KEY-----',
-    gatewayUrl: config.plugins.alipay.gatewayUrl,
-  });
+    
+    alipay_sdk = new AlipaySdk({
+      appId: config.plugins.alipay.appid,
+      privateKey: privateKey,
+      alipayPublicKey: publicKey,
+      gateway: config.plugins.alipay.gatewayUrl || 'https://openapi.alipay.com/gateway.do',
+    });
+  } catch (err) {
+    logger.error('Failed to initialize Alipay SDK:', err);
+  }
 }
 
 const isTelegram = config.plugins.webgui_telegram && config.plugins.webgui_telegram.use;
@@ -71,12 +63,12 @@ const createOrder = async (user, account, orderId) => {
   }
   const myOrderId = moment().format('YYYYMMDDHHmmss') + Math.random().toString().substr(2, 6);
   const time = 60;
-  const qrCode = await alipay_f2f.createQRPay({
-    tradeNo: myOrderId,
+  const qrCode = await alipay_sdk.exec('alipay.trade.precreate', {
+    out_trade_no: myOrderId,
     subject: orderInfo.name || 'ss续费',
-    totalAmount: +orderInfo.alipay,
+    total_amount: +orderInfo.alipay,
     body: orderInfo.name || 'ss续费',
-    timeExpress: 10,
+    timeout_express: '10m',
   });
   await knex('alipay').insert({
     orderId: myOrderId,
@@ -121,12 +113,14 @@ const sendSuccessMail = async userId => {
 
 cron.minute(async () => {
   logger.info('check alipay order');
-  if(!alipay_f2f) { return; }
+  if(!alipay_sdk) { return; }
   const orders = await knex('alipay').select().whereNotBetween('expireTime', [0, Date.now()]);
   const scanOrder = order => {
     logger.info(`order: [${ order.orderId }]`);
     if(order.status !== 'TRADE_SUCCESS' && order.status !== 'FINISH') {
-      return alipay_f2f.checkInvoiceStatus(order.orderId).then(success => {
+      return alipay_sdk.exec('alipay.trade.query', {
+        out_trade_no: order.orderId,
+      }).then(success => {
         if(success.code === '10000') {
           return knex('alipay').update({
             status: success.trade_status
@@ -175,19 +169,24 @@ const checkOrder = async (orderId) => {
   return order.status;
 };
 
-const verifyCallback = (data) => {
-  const signStatus = alipay_f2f.verifyCallback(data);
-  if(signStatus) {
-    knex('alipay').update({
-      status: data.trade_status,
-      alipayData: JSON.stringify(data),
-    }).where({
-      orderId: data.out_trade_no,
-    }).andWhereNot({
-      status: 'FINISH',
-    }).then();
+const verifyCallback = async (data) => {
+  try {
+    const signStatus = await alipay_sdk.checkNotifySign(data);
+    if(signStatus) {
+      await knex('alipay').update({
+        status: data.trade_status,
+        alipayData: JSON.stringify(data),
+      }).where({
+        orderId: data.out_trade_no,
+      }).andWhereNot({
+        status: 'FINISH',
+      });
+    }
+    return signStatus;
+  } catch (err) {
+    logger.error('Alipay callback verification failed:', err);
+    return false;
   }
-  return signStatus;
 };
 
 const orderList = async (options = {}) => {
@@ -342,15 +341,16 @@ const refund = async (orderId, amount) => {
   if(!order) { return Promise.reject('order not found'); }
   let refundAmount = order.amount;
   if(amount) { refundAmount = amount; }
-  const result = await alipay_f2f.refund(order.orderId, {
-    refundNo: moment().format('YYYYMMDDHHmmss') + Math.random().toString().substr(2, 6),
-    refundAmount,
+  const result = await alipay_sdk.exec('alipay.trade.refund', {
+    out_trade_no: order.orderId,
+    refund_amount: refundAmount,
+    out_request_no: moment().format('YYYYMMDDHHmmss') + Math.random().toString().substr(2, 6),
   });
   return result;
 };
 
 cron.minute(async () => {
-  if(!alipay_f2f) { return; }
+  if(!alipay_sdk) { return; }
   await knex('alipay').delete().where({ status: 'CREATE' }).whereBetween('createTime', [0, Date.now() - 1 * 24 * 3600 * 1000]);
 }, 'DeleteAlipayOrder', 53);
 

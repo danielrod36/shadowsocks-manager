@@ -10,7 +10,7 @@ const email = appRequire('plugins/email/index');
 const config = appRequire('services/config').all();
 const isAlipayUse = config.plugins.alipay && config.plugins.alipay.use;
 const isPaypalUse = config.plugins.paypal && config.plugins.paypal.use;
-const rp = require('request-promise');
+const axios = require('axios');
 const macAccount = appRequire('plugins/macAccount/index');
 const refOrder = appRequire('plugins/webgui_ref/order');
 const refUser = appRequire('plugins/webgui_ref/user');
@@ -592,46 +592,52 @@ exports.getAccountIpFromAllServer = (req, res) => {
 exports.getAccountIpInfo = (req, res) => {
   const ip = req.params.ip;
 
-  const taobao = ip => {
+  const taobao = async ip => {
     const uri = `http://ip.taobao.com/service/getIpInfo.php?ip=${ ip }`;
-    return rp({ uri, timeout: 10 * 1000 }).then(success => {
+    try {
+      const response = await axios.get(uri, { timeout: 10 * 1000 });
       const decode = (s) => {
         return unescape(s.replace(/\\u/g, '%u'));
       };
-      return JSON.parse(decode(success));
-    }).then(success => {
+      const success = JSON.parse(decode(response.data));
       if(success.code !== 0) {
         return Promise.reject(success.code);
       }
       const result = [success.data.region + (success.data.region === success.data.city ? '' : success.data.city), success.data.isp];
       return result;
-    });
+    } catch (error) {
+      return Promise.reject(error);
+    }
   };
 
-  const sina = ip => {
+  const sina = async ip => {
     const uri = `https://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js&ip=${ ip }`;
-    return rp({ uri, timeout: 10 * 1000 }).then(success => {
+    try {
+      const response = await axios.get(uri, { timeout: 10 * 1000 });
       const decode = (s) => {
         return unescape(s.replace(/\\u/g, '%u'));
       };
-      return JSON.parse(decode(success.match(/^var remote_ip_info = ([\s\S]+);$/)[1]));
-    }).then(success => {
+      const success = JSON.parse(decode(response.data.match(/^var remote_ip_info = ([\s\S]+);$/)[1]));
       const result = [success.province + success.city, success.isp];
       return result;
-    });
+    } catch (error) {
+      return Promise.reject(error);
+    }
   };
 
-  const ipip = ip => {
+  const ipip = async ip => {
     const uri = `https://freeapi.ipip.net/${ ip }`;
-    return rp({ uri, timeout: 10 * 1000 }).then(success => {
+    try {
+      const response = await axios.get(uri, { timeout: 10 * 1000 });
       const decode = (s) => {
         return unescape(s.replace(/\\u/g, '%u'));
       };
-      return JSON.parse(decode(success));
-    }).then(success => {
+      const success = JSON.parse(decode(response.data));
       const result = [success[1] + success[2], success[4]];
       return result;
-    });
+    } catch (error) {
+      return Promise.reject(error);
+    }
   };
 
   const getIpFunction = ip => {

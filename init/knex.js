@@ -4,7 +4,7 @@ let knex;
 if(typeof config === 'object') {
   const { host, user, password, database, port } = config;
   knex = require('knex')({
-    client: 'mysql',
+    client: 'mysql2',
     connection: {
       host,
       user,

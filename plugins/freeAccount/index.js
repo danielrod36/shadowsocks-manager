@@ -1,6 +1,6 @@
 const log4js = require('log4js');
 const logger = log4js.getLogger('freeAccount');
-const rp = require('request-promise');
+const axios = require('axios');
 const config = appRequire('services/config').all();
 const cron = appRequire('init/cron');
 const knex = appRequire('init/knex').knex;
@@ -233,16 +233,19 @@ app.post('/qrcode', async (req, res) => {
     score: 1,
   };
   if(config.plugins.freeAccount.recaptcha) {
-    recaptchaResult = await rp({
-      uri: 'https://www.google.com/recaptcha/api/siteverify',
-      method: 'POST',
-      form: {
-        secret: config.plugins.freeAccount.recaptcha.secret,
-        response: token,
-        remoteip: ip,
-      },
-      json: true,
-    });
+    try {
+      const response = await axios.post('https://www.google.com/recaptcha/api/siteverify', null, {
+        params: {
+          secret: config.plugins.freeAccount.recaptcha.secret,
+          response: token,
+          remoteip: ip,
+        },
+      });
+      recaptchaResult = response.data;
+    } catch (error) {
+      logger.error('reCAPTCHA verification error:', error.message);
+      recaptchaResult.success = false;
+    }
   }
   if(!recaptchaResult.success) { return res.send({
     qrcode: 'ss://invalidRequest',

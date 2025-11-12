@@ -1,4 +1,4 @@
-const del = require('del');
+const { deleteAsync } = require('del');
 const gulp = require('gulp');
 const path = require('path');
 const webpackStream = require('webpack-stream');
@@ -6,7 +6,7 @@ const concat = require('gulp-concat');
 const cleanCSS = require('gulp-clean-css');
 
 gulp.task('clean', () => {
-  return del([
+  return deleteAsync([
     'plugins/webgui/libs/bundle.js',
     'plugins/webgui/libs/lib.js',
     'plugins/webgui/libs/style.css',
@@ -48,7 +48,7 @@ gulp.task('webguiBuild', () => {
   .pipe(webpackStream({
     entry: './plugins/webgui/public/app.js',
     output: {
-      path: path.resolve(__dirname, 'libs'),
+      path: path.resolve(__dirname, 'plugins/webgui/libs'),
       filename: 'bundle.js'
     },
     externals: [
@@ -61,7 +61,7 @@ gulp.task('webguiBuild', () => {
         test: /\.js$/,
         use: [{
           loader: 'babel-loader',
-          query: {
+          options: {
             presets: [
               [
                 '@babel/env', {

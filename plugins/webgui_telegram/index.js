@@ -4,60 +4,72 @@ const knex = appRequire('init/knex').knex;
 const cron = appRequire('init/cron');
 const config = appRequire('services/config').all();
 const token = config.plugins.webgui_telegram.token;
-const rp = require('request-promise');
+const axios = require('axios');
 const url = `https://api.telegram.org/bot${ token }/`;
 
 const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
-const sendMessage = (text, chat_id, reply_to_message_id) => {
-  return rp({
-    method: 'GET',
-    uri: url + 'sendMessage',
-    qs: {
-      chat_id,
-      text,
-      reply_to_message_id,
-    },
-    simple: false,
-  });
+const sendMessage = async (text, chat_id, reply_to_message_id) => {
+  try {
+    const response = await axios.get(url + 'sendMessage', {
+      params: {
+        chat_id,
+        text,
+        reply_to_message_id,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    logger.error('Telegram sendMessage error:', error.message);
+    throw error;
+  }
 };
 
-const sendMarkdown = (text, chat_id) => {
-  return rp({
-    method: 'GET',
-    uri: url + 'sendMessage',
-    qs: {
-      chat_id,
-      text,
-      parse_mode: 'Markdown',
-    },
-    simple: false,
-  });
+const sendMarkdown = async (text, chat_id) => {
+  try {
+    const response = await axios.get(url + 'sendMessage', {
+      params: {
+        chat_id,
+        text,
+        parse_mode: 'Markdown',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    logger.error('Telegram sendMarkdown error:', error.message);
+    throw error;
+  }
 };
 
-const sendKeyboard = (text, chat_id, keyboard) => {
-  return rp({
-    method: 'GET',
-    uri: url + 'sendMessage',
-    qs: {
-      chat_id,
-      text,
-      reply_markup: JSON.stringify(keyboard),
-    },
-    simple: false,
-  });
+const sendKeyboard = async (text, chat_id, keyboard) => {
+  try {
+    const response = await axios.get(url + 'sendMessage', {
+      params: {
+        chat_id,
+        text,
+        reply_markup: JSON.stringify(keyboard),
+      },
+    });
+    return response.data;
+  } catch (error) {
+    logger.error('Telegram sendKeyboard error:', error.message);
+    throw error;
+  }
 };
 
-const sendPhoto = (photo, chat_id) => {
-  return rp({
-    method: 'GET',
-    uri: url + 'sendPhoto',
-    qs: {
-      chat_id,
-      photo,
-    },
-    simple: false,
-  });
+const sendPhoto = async (photo, chat_id) => {
+  try {
+    const response = await axios.get(url + 'sendPhoto', {
+      params: {
+        chat_id,
+        photo,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    logger.error('Telegram sendPhoto error:', error.message);
+    throw error;
+  }
 };
 
 const EventEmitter = require('events');
@@ -117,16 +129,13 @@ const getUpdateId = async () => {
 const getMessage = async () => {
   const updateId = await getUpdateId();
   try {
-    const result = await rp({
-      method: 'GET',
-      uri: url + 'getUpdates',
-      qs: {
+    const response = await axios.get(url + 'getUpdates', {
+      params: {
         offset: updateId,
         timeout: 30,
       },
-      simple: false,
     });
-    const resultObj = JSON.parse(result);
+    const resultObj = response.data;
     if(resultObj.ok && resultObj.result.length) {
       resultObj.result.forEach(message => {
         logger.info(message);
@@ -137,20 +146,15 @@ const getMessage = async () => {
       await sleep(15000);
     }
   } catch (err) {
-    logger.error(err);
+    logger.error('Telegram getMessage error:', err.message);
     await sleep(3000);
     return;
   }
 };
 
 const getMe = async () => {
-  const result = await rp({
-    method: 'GET',
-    uri: url + 'getMe',
-    qs: {},
-    simple: false,
-  });
-  return JSON.parse(result);
+  const response = await axios.get(url + 'getMe');
+  return response.data;
 };
 
 const isUser = async telegramId => {

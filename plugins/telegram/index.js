@@ -1,7 +1,7 @@
 const log4js = require('log4js');
 const logger = log4js.getLogger('telegram');
 
-const rp = require('request-promise');
+const axios = require('axios');
 const knex = appRequire('init/knex').knex;
 const _ = require('lodash');
 const config = appRequire('services/config').all();
@@ -44,38 +44,38 @@ const getUpdateId = async () => {
 
 const getMessages = async (updateId) => {
   try {
-    const result = await rp({
-      method: 'GET',
-      uri: url + 'getUpdates',
-      qs: {
+    const response = await axios.get(url + 'getUpdates', {
+      params: {
         offset: updateId,
         timeout: 30,
       },
-      simple: false,
     });
-    const data = JSON.parse(result);
+    const data = response.data;
     if(data.ok && data.result.length) {
       return data.result;
     } else {
       return;
     }
   } catch(err) {
-    logger.error(err);
+    logger.error('Telegram getMessages error:', err.message);
     return Promise.reject(err);
   }
 };
 
-const sendMessage = (text, chat_id, reply_to_message_id) => {
-  return rp({
-    method: 'GET',
-    uri: url + 'sendMessage',
-    qs: {
-      chat_id,
-      text,
-      reply_to_message_id,
-    },
-    simple: false,
-  });
+const sendMessage = async (text, chat_id, reply_to_message_id) => {
+  try {
+    const response = await axios.get(url + 'sendMessage', {
+      params: {
+        chat_id,
+        text,
+        reply_to_message_id,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    logger.error('Telegram sendMessage error:', error.message);
+    throw error;
+  }
 };
 
 const EventEmitter = require('events');

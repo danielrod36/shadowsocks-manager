@@ -11,6 +11,32 @@
 A shadowsocks manager tool for multi user and traffic control.
 Base on Node.js and SQLite.
 
+## 🚨 CRITICAL SECURITY UPDATE
+
+**⚠️ IMPORTANT**: The npm package has NOT been updated yet and still contains vulnerabilities!
+
+**❌ Don't Use (Contains Vulnerabilities):**
+```bash
+npm i -g shadowsocks-manager  # Still has 4 critical CVEs!
+```
+
+**✅ Use This Instead (Secure Version):**
+```bash
+git clone https://github.com/shadowsocks/shadowsocks-manager.git
+cd shadowsocks-manager
+npm install
+npm run build
+node server.js
+```
+
+**🔒 Security Fixes Applied:**
+- ✅ Fixed 4 critical CVEs (axios, ejs, js-yaml, ws)
+- ✅ Updated to Node.js 18+ (Node.js 12 is EOL)
+- ✅ Added security middleware (Helmet.js, rate limiting)
+- ✅ Removed deprecated packages (request, request-promise)
+
+**📚 Read [SECURITY.md](SECURITY.md) for complete security upgrade instructions.**
+
 For more details, you can see [docs](https://shadowsocks.github.io/shadowsocks-manager/).
 
 If you want to use the old version, please switch to [this branch](https://github.com/shadowsocks/shadowsocks-manager/tree/version1).
